@@ -1,5 +1,5 @@
 <template>
   <div>
-    <h1>Sessions</h1>
+    <h2>Sessions</h2>
   </div>
 </template>

@@ -2,7 +2,7 @@
   <div>
     <nav class="site-nav navbar navbar-expand bg-primary navbar-dark">
       <div class="container-fluid">
-        <router-link class="navbar-brand" to="/">TriggerPoint.Pro</router-link>
+        <router-link class="navbar-brand"  to="/"><h1 class="logo">TriggerPoint.Pr<img src="../assets/tppr.png" alt="logo" width="30" height="30" /></h1></router-link>
         <div class="navbar-nav ml-auto">
           <router-link class="nav-item nav-link" to="/sessions">sessions</router-link>
           <router-link class="nav-item nav-link" to="/login">log in</router-link>
