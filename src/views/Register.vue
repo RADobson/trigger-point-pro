@@ -107,11 +107,19 @@ export default {
         email: this.email,
         password: this.passOne,
         displayName: this.displayName
-      }
+      };
       if(!this.error) {
-        Firebase.auth().createUserWithEmailAndPassword(info.email, info.password).then(
+        Firebase.auth().createUserWithEmailAndPassword(info.email, info.password)
+        .then(
           userCredentials => {
-            this.$router.replace('sessions');
+            return userCredentials.user
+            .updateProfile({
+              displayName: info.displayName
+            })
+            .then(() => {
+              this.$router.replace('sessions');
+            });
+            
           }, error => {
             this.error = error.message;
           }

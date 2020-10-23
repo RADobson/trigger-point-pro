@@ -4,6 +4,8 @@ import Home from "../views/Home.vue";
 import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import Sessions from "../views/Sessions.vue";
+import CheckIn from "../views/Checkin.vue";
+import Client from "../views/Client.vue";
 
 Vue.use(VueRouter);
 
@@ -27,6 +29,16 @@ const routes = [
     path: "/sessions",
     name: "sessions",
     component: Sessions
+  },
+  {
+    path: "/checkin/:userID/:sessionID",
+    name: "CheckIn",
+    component: CheckIn
+  },
+  {
+    path: "/client/:userID/:sessionID",
+    name: "Client",
+    component: Client
   },
   {
     path: "*",
