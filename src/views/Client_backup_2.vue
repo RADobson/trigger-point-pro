@@ -75,7 +75,7 @@
         </div>
       </div>
     </div>
-  <h1>Step 1: Target Zone</h1>
+  <!-- <h1>Step 1: Target Zone</h1>
     <label class="toggle-control">
       <input type="checkbox" checked="unchecked" @change="myFunction()" />
       <span class="control"></span>
@@ -113,11 +113,12 @@
         alt="girl back"
       />
     </template>
-    <div class="bounds"></div>
+    <div class="bounds"></div> -->
   </div>
 </template>
 <script>
 /*eslint-disable no-unused-vars*/
+/* eslint-disable vue/no-unused-components */
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 import Moveable from "vue-moveable";
