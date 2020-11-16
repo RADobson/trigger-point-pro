@@ -75,27 +75,31 @@
         </div>
       </div>
     </div>
+    <div class="row justify-content-center">
+      <h1>TEST</h1>
+
+    
+
+
+    </div>
+<div class="row justify-content-center" id="outerContainer">
   <h1>Step 1: Target Zone</h1>
+</div>
+<div class="row">
     <label class="toggle-control">
-      <input type="checkbox" checked="unchecked" @change="myFunction()" />
+      <input type="checkbox" checked="unchecked" @change="toggleSex()" />
       <span class="control"></span>
     </label>
-    <div id="container">
-      <Moveable
-        class="moveable"
-        v-bind="moveable"
-        @drag="handleDrag"
-        @dragEnd="dragEnd"
-        ref="moveable"
-      >
-      <font-awesome-icon
-          :icon="['fas', 'mouse-pointer']"
-          size="lg"
-          :style="{ color: 'blue' }"
-        ></font-awesome-icon>
-      </Moveable>
-    </div>
-    <template v-if="isBoy">
+</div>
+
+
+
+
+<div class="row justify-content-center" id="container">
+<div id="target_item">
+</div>  
+
+<template v-if="isBoy">
       <img
         class="man_back"
         src="./man_back.png"
@@ -113,64 +117,98 @@
         alt="girl back"
       />
     </template>
-    <div class="bounds"></div>
+</div>
+
+
   </div>
 </template>
 <script>
 /*eslint-disable no-unused-vars*/
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-
+/* eslint-disable vue/no-unused-components */
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import Moveable from "vue-moveable";
-import db from "../db.js";
+import db from "../db.js"
 export default {
-  name: "Client",
-  data: function() {
-    return {
-      //     height: 900px;
-      // width: 600px;
-      // left: 335px;
-      // right: 930px;
-      // top: 160px;
-      // bottom: 0px;
-      moveable: {
-        bounds: { left: 335, right: 930, top: 160, bottom: 1060 },
-        draggable: true,
-        throttleDrag: 0,
-        roundable: false,
-        resizable: false,
-        throttleResize: 1,
-        scalable: true,
-        throttleScale: 0,
-        rotatable: true,
-        throttleRotate: 0,
-        keepRatio: true,
-        dragArea: true,
-        snappable: true,
-        pinchable: true, // ["draggable", "resizable", "scalable", "rotatable"]
-        origin: false
+    name: "Client",
+    data: function() {
+        return {
+            client: [],
+            searchQuery: "",
+            userID: this.$route.params.userID,
+            sessionID: this.$route.params.sessionID,
+            isBoy: true
+        }
+    },
+    components: {
+      FontAwesomeIcon,
+      Moveable
+    },
+    computed: {
+      filteredClient: function() {
+        const dataFilter = item => item.displayName.toLowerCase().match(this.searchQuery.toLowerCase()) && true;
+        return this.client.filter(dataFilter);
+      }
+    },
+    methods: {
+      toggleStar: function(clientID) {
+        if (this.user && this.user.uid==this.userID) {
+          const ref = db
+          .collection("users")
+          .doc(this.user.uid)
+          .collection("sessions")
+          .doc(this.sessionID)
+          .collection("client")
+          .doc(clientID);
+
+          ref.get().then(doc => {
+            const star = doc.data().star;
+            if(star) {
+              ref.update({
+                star: !star
+              });
+            } else {
+              ref.update({
+                star: true
+              });
+            }
+          });
+        }
       },
-      isBoy: true,
-      client: [],
-      searchQuery: "",
-      userID: this.$route.params.userID,
-      sessionID: this.$route.params.sessionID,
-    
-    };
-  },
-  components: {
-    FontAwesomeIcon,
-    Moveable
-  },
-  computed: {
-    filteredClient: function() {
-      const dataFilter = item =>
-        item.displayName.toLowerCase().match(this.searchQuery.toLowerCase()) &&
-        true;
-      return this.client.filter(dataFilter);
-    }
-  },
-  methods: {
-   mounted() {
+      deleteClient: function(clientID) {
+        if (this.user && this.user.uid==this.userID) {
+          db.collection("users")
+          .doc(this.user.uid)
+          .collection("sessions")
+          .doc(this.sessionID)
+          .collection("client")
+          .doc(clientID)
+          .delete();
+        }
+      },
+      toggleSex: function() {
+      var checkBox = document.getElementsByClassName("toggle-control");
+      var container = document.getElementById("container");
+      this.isBoy = !this.isBoy;
+    },
+     getXYPosition: function(clientID) { //please help me with this
+       const ref = db
+          .collection("users")
+          .doc(this.user.uid)
+          .collection("sessions")
+          .doc(this.sessionID)
+          .collection("client")
+          .doc(clientID);
+
+            ref.get().then(doc => {
+            const pos = doc.data().pos;
+            if(pos) {
+              return ref.data().pos
+              }
+            }); 
+     }
+    },
+    props: ["user"],
+    mounted() {
         db.collection("users")
         .doc(this.userID)
         .collection("sessions")
@@ -188,144 +226,98 @@ export default {
             });
             this.client = snapData;
         });
-    },
-    handleDrag({ target, transform }) {
-    //  console.log("onDrag left, top", transform);
-      target.style.transform = transform;
-    },
-    dragEnd({ clientX, clientY }) {
-   console.log(clientX, clientY);
-    },
-    myFunction: function() {
-      var checkBox = document.getElementsByClassName("toggle-control");
-      var container = document.getElementById("container");
-      this.isBoy = !this.isBoy;
-      this.$refs.moveable.request("draggable", { x: 652, y: 540 }, true); //this is the line Suyog referred to
-    },
-    toggleStar: function(clientID) {
-      if (this.user && this.user.uid == this.userID) {
-        // const ref = db
-        //   .collection("users")
-        //   .doc(this.user.uid)
-        //   .collection("sessions")
-        //   .doc(this.sessionID)
-        //   .collection("client")
-        //   .doc(clientID);
-        // ref.get().then(doc => {
-        //   const star = doc.data().star;
-        //   if (star) {
-        //     ref.update({
-        //       star: !star
-        //     });
-        //   } else {
-        //     ref.update({
-        //       star: true
-        //     });
-        //   }
-        // });
-      }
-    },
-    deleteClient: function(clientID) {
-      if (this.user && this.user.uid == this.userID) {
-        // db.collection("users")
-        //   .doc(this.user.uid)
-        //   .collection("sessions")
-        //   .doc(this.sessionID)
-        //   .collection("client")
-        //   .doc(clientID)
-        //   .delete();
-      }
+        //Drag-and-drop Vanilla JS code
+        var dragItem = document.querySelector("#target_item");
+        var container = document.querySelector("#container");
+    
+        var active = false;
+        var currentX;
+        var currentY;
+        var initialX;
+        var initialY;
+        var xOffset = 0;
+        var yOffset = 0;
+    
+        container.addEventListener("touchstart", dragStart, false);
+        container.addEventListener("touchend", dragEnd, false);
+        container.addEventListener("touchmove", drag, false);
+    
+        container.addEventListener("mousedown", dragStart, false);
+        container.addEventListener("mouseup", dragEnd, false);
+        container.addEventListener("mousemove", drag, false);
+    
+        function dragStart(e) {
+          if (e.type === "touchstart") {
+            initialX = e.touches[0].clientX - xOffset;
+            initialY = e.touches[0].clientY - yOffset;
+          } else {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+          }
+    
+          if (e.target === dragItem) {
+            active = true;
+          }
+        }
+    
+        function dragEnd(e) {
+          initialX = currentX;
+          initialY = currentY;
+    
+          active = false;
+        }
+    
+        function drag(e) {
+          if (active) {
+          
+            //e.preventDefault();
+          
+            if (e.type === "touchmove") {
+              e.preventDefault();
+              currentX = e.touches[0].clientX - initialX;
+              currentY = e.touches[0].clientY - initialY;
+            } else {
+              currentX = e.clientX - initialX;
+              currentY = e.clientY - initialY;
+            }
+    
+            xOffset = currentX;
+            yOffset = currentY;
+    
+            setTranslate(currentX, currentY, dragItem);
+          }
+        }
+    
+        function setTranslate(xPos, yPos, el) {
+          el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+        }
+        //End of drag-and-drop Vanilla JS code
     }
-  },
-  props: ["user"]
-};
+}
 </script>
+<style scoped>
+/*Moveable target_item*/
+#target_item {
+    width: 80px;
+    height: 80px;
+    background-color: lightgrey;
+    border: 10px solid rgba(136, 136, 136, .5);
+    border-radius: 50%;
+    touch-action: none;
+    user-select: none;
+    box-sizing: border-box;
+    justify-self: center;
+    float: right;
+  }
+  #target_item:active {
+    background-color: rgba(168, 218, 220, 1.00);
+  }
+  #target_item:hover {
+    cursor: pointer;
+    border-width: 16px;
+  }
 
-<style>
-body {
-  margin: 0 auto;
-  background-color: black;
-}
-.main_container {
-  width: 900px;
-  height: auto;
 
-  margin: auto;
-}
-.main_container > header {
-  background-color: #626368;
-}
-
-.main_container > header > .logo > img {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.nav > ul {
-  padding: 0px;
-  margin: 0px;
-  list-style-type: none;
-  text-align: center;
-}
-.nav > ul > li {
-  display: inline-block;
-  text-decoration-line: underline;
-}
-.nav > ul > li > a {
-  color: silver;
-  text-decoration: none;
-  display: block;
-  padding: 15px;
-  font-family: Georgia, "Times New Roman", Times, serif;
-  font-size: x-large;
-}
-nav > ul > li > a:hover {
-  background-color: gray;
-}
-.clearfix {
-  clear: both;
-}
-
-#container {
-  position: relative;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-.moveable {
-  font-family: "Roboto", sans-serif;
-  position: relative;
-  width: 60px;
-  height: 60px;
-  z-index: 9999;
-  text-align: center;
-  font-size: 40px;
-  margin: 0 auto;
-  font-weight: 100;
-  letter-spacing: 1px;
-}
-
-#item {
-  width: 40px;
-  height: 40px;
-  background-color: lightgrey;
-  border: 10px solid rgba(136, 136, 136, 0.5);
-  border-radius: 50%;
-  touch-action: none;
-  user-select: none;
-  box-sizing: border-box;
-  justify-self: center;
-  z-index: 999;
-  background-image: url(./arrow.png);
-}
-#item:active {
-  background-color: rgba(168, 218, 220, 1);
-}
-#item:hover {
-  cursor: pointer;
-  border-width: 16px;
-}
 /*Sex Toggle Switch*/
 .toggle-control {
   display: flex;
@@ -352,7 +344,8 @@ nav > ul > li > a:hover {
   width: 0;
 }
 .toggle-control input:checked ~ .control {
-  background-color: lightpink;
+ 
+  background-color: dodgerblue;
 }
 .toggle-control input:checked ~ .control:after {
   left: 55px;
@@ -364,7 +357,8 @@ nav > ul > li > a:hover {
   height: 50px;
   width: 100px;
   border-radius: 25px;
-  background-color: dodgerblue;
+  
+   background-color: lightpink;
   -webkit-transition: background-color 0.15s ease-in;
   transition: background-color 0.15s ease-in;
 }
@@ -379,128 +373,5 @@ nav > ul > li > a:hover {
   background: white;
   -webkit-transition: left 0.15s ease-in;
   transition: left 0.15s ease-in;
-}
-
-.direction {
-  background: white;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-column-gap: 1em;
-  grid-auto-rows: minmax(130px; auto);
-  justify-items: center;
-  align-items: center;
-  width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: auto;
-  padding-bottom: 60px;
-}
-
-#up_arrow {
-  margin-top: 50px;
-  margin-left: auto;
-  margin-right: auto;
-  justify-self: center;
-  align-self: center;
-  grid-column: 1 / span 3;
-  grid-row: 1;
-}
-
-#left_arrow {
-  margin-top: 20px;
-  margin-left: auto;
-  margin-right: 0px;
-  justify-self: right;
-  align-self: center;
-  grid-column: 1;
-  grid-row: 2;
-}
-#right_arrow {
-  margin-top: 20px;
-  margin-left: 0px;
-  margin-right: auto;
-  justify-self: left;
-  align-self: center;
-  grid-column: 3;
-  grid-row: 2;
-}
-#down_arrow {
-  margin-top: 20px;
-  margin-left: auto;
-  margin-right: auto;
-  justify-self: center;
-  align-self: center;
-  grid-column: 1 / span 3;
-  grid-row: 3;
-}
-#red_button {
-  margin-top: 20px;
-  margin-left: auto;
-  margin-right: auto;
-  justify-self: left;
-  align-self: center;
-  grid-column: 2;
-  grid-row: 2;
-}
-
-.pressure {
-  background: white;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-column-gap: 1em;
-  grid-auto-rows: minmax(130px; auto);
-  justify-items: center;
-  align-items: center;
-  width: 700px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: auto;
-  padding-bottom: 60px;
-}
-
-#foo {
-  grid-column: 1 / span 3;
-  grid-row: 1 / span 3;
-}
-
-#down {
-  height: 50px;
-  width: 50px;
-  justify-self: left;
-}
-
-#up {
-  height: 50px;
-  width: 50px;
-  justify-self: left;
-}
-
-#copyright {
-  color: white;
-}
-
-h1 {
-  color: lightgrey;
-}
-.man_back {
-  z-index: -121;
-  position: absolute;
-  left: 335px;
-  right: 930px;
-  top: 160px;
-  bottom: 0px;
-}
-.bounds {
-  position: absolute;
-  height: 900px;
-  width: 600px;
-  left: 335px;
-  right: 930px;
-  top: 160px;
-  bottom: 0px;
-  border: 5px solid blue;
-}
-.moveable-control-box {
-  opacity: 0;
 }
 </style>
