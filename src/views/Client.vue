@@ -190,7 +190,7 @@ export default {
       var container = document.getElementById("container");
       this.isBoy = !this.isBoy;
     },
-     getXYPosition: function(clientID) { //please help me with this
+     get_X_Position: function(clientID) { //please help me with this
        const ref = db
           .collection("users")
           .doc(this.user.uid)
@@ -199,11 +199,21 @@ export default {
           .collection("client")
           .doc(clientID);
 
-            ref.get().then(doc => {
-            const pos = doc.data().pos;
-            if(pos) {
-              return ref.data().pos
-              }
+          ref.get().then(doc => {
+            return doc.data().currentX;
+            }); 
+     },
+      get_Y_Position: function(clientID) { //please help me with this
+       const ref = db
+          .collection("users")
+          .doc(this.user.uid)
+          .collection("sessions")
+          .doc(this.sessionID)
+          .collection("client")
+          .doc(clientID);
+
+          ref.get().then(doc => {
+            return doc.data().currentY;
             }); 
      }
     },
@@ -221,18 +231,23 @@ export default {
                     id: doc.id,
                     email: doc.data().email,
                     displayName: doc.data().displayName,
-                    star: doc.data().star
+                    star: doc.data().star,
+                    //sex: doc.data().sex, // should this be boolean? ie. - isboy: doc.data().isboy,
+                    currentX: doc.data().currentX,
+                    currentY: doc.data().currentY
                 });
             });
             this.client = snapData;
         });
-        //Drag-and-drop Vanilla JS code
+        /*##################################################*/
+        /*#########  Drag-and-drop Vanilla JS code #########*/
+        /*##################################################*/
         var dragItem = document.querySelector("#target_item");
         var container = document.querySelector("#container");
     
         var active = false;
-        var currentX;
-        var currentY;
+        var currentX;  //this.client.get_X_Position();
+        var currentY;  //this.client.get_Y_Position();
         var initialX;
         var initialY;
         var xOffset = 0;
@@ -291,7 +306,9 @@ export default {
         function setTranslate(xPos, yPos, el) {
           el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
         }
-        //End of drag-and-drop Vanilla JS code
+        /*##################################################*/
+        /* ###### End of drag-and-drop Vanilla JS code #####*/
+        /*##################################################*/
     }
 }
 </script>
