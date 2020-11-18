@@ -190,6 +190,9 @@ export default {
       var container = document.getElementById("container");
       this.isBoy = !this.isBoy;
     },
+   /*######################################################################
+     ################# DRAG-N-DROP NOT WORKING ############################
+     ######################################################################
      get_X_Position: function(clientID) { //please help me with this
        const ref = db
           .collection("users")
@@ -202,7 +205,10 @@ export default {
           ref.get().then(doc => {
             return doc.data().currentX;
             }); 
-     },
+     },*/
+   /*######################################################################
+     ################# DRAG-N-DROP NOT WORKING ############################
+     ######################################################################
       get_Y_Position: function(clientID) { //please help me with this
        const ref = db
           .collection("users")
@@ -215,7 +221,7 @@ export default {
           ref.get().then(doc => {
             return doc.data().currentY;
             }); 
-     }
+     }*/
     },
     props: ["user"],
     mounted() {
